@@ -178,6 +178,7 @@ def get_with_query(url, query=None):
     else:
         return response.body
 
+
 def test_get_with_query():
     url = 'https://movie.douban.com/top250'
     query = {
@@ -185,6 +186,7 @@ def test_get_with_query():
     }
     r = get_with_query(url)
     print(r)
+
 
 # 作业 2.3
 #
@@ -204,6 +206,7 @@ def header_from_dict(headers):
     result_list = ['{key}: {value}\r\n'.format(key=k, value=v) for k, v in headers.items()]
     log('header_from_dict result_list {}'.format(result_list))
     return ''.join(result_list)
+
 
 # 作业 2.4
 #
