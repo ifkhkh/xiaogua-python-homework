@@ -244,5 +244,7 @@ def test():
 
 if __name__ == '__main__':
     # test()
+    with open('./get.text', 'wb') as f:
+        f.write(get('https://movie.douban.com/top250')[2].encode('utf-8'))
     main()
 

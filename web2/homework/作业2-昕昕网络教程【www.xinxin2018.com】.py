@@ -132,8 +132,11 @@ def recv_basic(the_socket):
     total_data = []
     while True:
         data = the_socket.recv(1024)
-        if not len(data): break
+        if not len(data):
+            break
+        log('recv_basic {}'.format(data))
         total_data.append(data)
+
     return b''.join(total_data)
 
 
@@ -164,9 +167,13 @@ def get_with_query(url, query=None):
 
 
     header = {
-        'host' : host,
-        'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0',
-        'Connection' : 'close',   # 不加这个域，recv完后会等待超时，一直卡在那
+        'host': host,
+        #'User-Agent': 'Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.94 Safari/537.36',
+        #'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0',
+        'Connection': 'close',   # 不加这个域，recv完后会一直卡在那等待超时.
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+       # 'Accept-Encoding': 'gzip, deflate, br',
+        'Accept-Language': 'zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2',
     }
     response = http_request(socket, method='GET', path=path, header=header)
     socket.close()
@@ -182,10 +189,10 @@ def get_with_query(url, query=None):
 def test_get_with_query():
     url = 'https://movie.douban.com/top250'
     query = {
-        'wd' : 'hello',
+        'start': '10',
     }
-    r = get_with_query(url)
-    print(r)
+    r = get_with_query(url, query)
+    print(r.decode('utf-8'))
 
 
 # 作业 2.3
@@ -223,6 +230,7 @@ def test_header_from_dict():
     # NOTE, 字典是无序的, 不知道哪个参数在前面, 所以这样测试
     assert header_from_dict(header) in expected
 
+
 # 作业 2.5
 #
 """
@@ -242,7 +250,13 @@ https://movie.douban.com/top250
 解析方式可以用任意手段，如果你没有想法，用字符串查找匹配比较好(find 特征字符串加切片)
 """
 
+from bs4 import BeautifulSoup
 
+
+def parse_doubanmovies250_onepage(html):
+    parsed_html = BeautifulSoup(html, 'html.parser')
+    log('parse_doubanmovies250_onepage', parsed_html.body.find_all('li'))
+    #log('parse_doubanmovies250_onepage', parsed_html.body.find('ol', class_='grid_view'))
 
 # 作业 2.6
 #
@@ -268,7 +282,16 @@ https://movie.douban.com/top250?start=25
 
 解析方式可以用任意手段，如果你没有想法，用字符串查找匹配比较好(find 特征字符串加切片)
 """
+import requests
+import time
 if __name__ == '__main__':
-    test_path_with_query()
-    test_header_from_dict()
-    test_get_with_query()
+    #test_path_with_query()
+    #test_header_from_dict()
+    #test_get_with_query()
+
+    #with open('./test1.html', 'wb') as f:
+    #    #f.write(get_with_query('http://www.baidu.com'))
+    #    f.write(get_with_query('https://movie.douban.com/top250'))
+    with open('./test2.html', 'wb') as f:
+        f.write(requests.get('https://movie.douban.com/top250').text.encode('utf-8'))
+    parse_doubanmovies250_onepage(requests.get('https://movie.douban.com/top250').text)

@@ -51,6 +51,26 @@ class Model(object):
         ms = [cls.new(m) for m in models]
         return ms
 
+    @classmethod
+    def find_by(cls, **kwargs):
+        all_objects = cls.all()
+        for object in all_objects:
+            for k, v in kwargs.items():
+                if object.hasattr(k) and getattr(object, k) == v:
+                    return object
+        return None
+
+     @classmethod
+     def find_all(cls, **kwargs):
+        all_objects = cls.all()
+        object_list = []
+        for object in all_objects:
+            for k, v in kwargs.items():
+                if object.hasattr(k) and getattr(object, k) == v:
+                    object_list.append(object)
+        return object_list
+
+
     def save(self):
         """
         save 函数用于把一个 Model 的实例保存到文件中

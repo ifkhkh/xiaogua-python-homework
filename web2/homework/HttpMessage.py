@@ -5,6 +5,7 @@
 # <body>
 from log import log
 
+
 class HttpRequest(object):
     supported_method_list = [
         'GET',
@@ -15,6 +16,7 @@ class HttpRequest(object):
         'OPTIONS',
         'DELETE',
     ]
+
     def __init__(self, method='GET', path='/', header=None, body=None):
         self._method = method.upper()
         self._path = path.lower()
@@ -43,8 +45,11 @@ class HttpRequest(object):
 # <headers> \r\n
 # \r\n
 # <body>
+import time
 class HttpRespone(object):
     def __init__(self, text=None):
+        #with open('./httprespone-{}.txt'.format(time.strftime("%Y%m%d%H%M%S", time.localtime())), 'wb') as f:
+        #    f.write(text)
         self._text = text
         text = text.decode('utf-8')
         self._status_code = 0
@@ -58,7 +63,7 @@ class HttpRespone(object):
             if len(text.split('\r\n')) > 2:
                 respone_line,text = text.split('\r\n', 1)
                 log('HttpRespone respone_line:{}'.format(respone_line))
-                self._version  = respone_line.split(maxsplit=2)[0].strip()
+                self._version = respone_line.split(maxsplit=2)[0].strip()
                 self._status_code = int(respone_line.split(maxsplit=2)[1].strip())
                 self._status_string = respone_line.split(maxsplit=2)[2].strip()
 
@@ -71,6 +76,7 @@ class HttpRespone(object):
 
                 if len(text.split('\r\n\r\n')) >=2:
                     self._body = text.split('\r\n\r\n')[1].encode('utf-8')
+                    log('HttpRespone', self._body)
     @property
     def status_code(self):
         return self._status_code

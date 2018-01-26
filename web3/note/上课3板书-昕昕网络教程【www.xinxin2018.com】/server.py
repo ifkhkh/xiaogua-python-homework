@@ -23,6 +23,7 @@ class Request(object):
         self.method = 'GET'
         self.path = ''
         self.query = {}
+        self.headers = {}
         self.body = ''
 
     def form(self):

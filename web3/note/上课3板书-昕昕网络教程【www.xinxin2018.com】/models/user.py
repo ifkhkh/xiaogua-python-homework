@@ -1,4 +1,5 @@
 from models import Model
+from models import load
 
 
 class User(Model):
@@ -7,7 +8,13 @@ class User(Model):
         self.password = form.get('password', '')
 
     def validate_login(self):
-        return self.username == 'gua' and self.password == '123'
+        valid_users = self.all()
+        print('valid_users {}'.format(valid_users))
+        for user in valid_users:
+            if self.username == user.username and self.password == user.password:
+                return True
+        else:
+            return False
 
     def validate_register(self):
         return len(self.username) > 2 and len(self.password) > 2
