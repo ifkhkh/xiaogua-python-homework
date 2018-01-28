@@ -37,6 +37,7 @@ def load(path):
 class Model(object):
     # @classmethod 说明这是一个 类方法
     # 类方法的调用方式是  类名.类方法()
+    next_id = 0
     @classmethod
     def db_path(cls):
         # classmethod 有一个参数是 class
@@ -49,6 +50,7 @@ class Model(object):
     def new(cls, form):
         # 下面一句相当于 User(form) 或者 Msg(form)
         m = cls(form)
+        m.id = form.get('id', None)
         return m
 
     @classmethod
@@ -59,17 +61,45 @@ class Model(object):
         path = cls.db_path()
         models = load(path)
         ms = [cls.new(m) for m in models]
+        Model.next_id = ms[-1].id + 1
         return ms
+
+    @classmethod
+    def find_by(cls, **kwargs):
+        all_objects = cls.all()
+        for object in all_objects:
+            for k, v in kwargs.items():
+                if hasattr(object, k) and getattr(object, k) == v:
+                    return object
+        return None
+
+    @classmethod
+    def find_all(cls, **kwargs):
+        all_objects = cls.all()
+        object_list = []
+        for object in all_objects:
+            for k, v in kwargs.items():
+                if object.hasattr(k) and getattr(object, k) == v:
+                    object_list.append(object)
+        return object_list
 
     def save(self):
         """
         save 函数用于把一个 Model 的实例保存到文件中
         """
         models = self.all()
-        log('models', models)
-        models.append(self)
         # __dict__ 是包含了对象所有属性和值的字典
-        l = [m.__dict__ for m in models]
+
+        if self.id is None:
+            self.id = Model.next_id
+            Model.next_id += 1
+            models.append(self)
+
+        l = []
+        for m in models:
+            if m.__dict__['id'] == self.id:
+                m.__dict__.update(self.__dict__)
+            l.append(m.__dict__)
         path = self.db_path()
         save(l, path)
 

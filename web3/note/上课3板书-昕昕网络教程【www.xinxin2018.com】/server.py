@@ -137,7 +137,34 @@ def run(host='', port=3000):
             connection.close()
 
 
+def test_models_id():
+    # 测试1：对同一个对象多次调用save
+    u = User.find_by(username='gua')
+    u.password = 'pwd'
+    u.save()
+    u.save()
+    u.save()
+    u.save()
+    u.save()
+    u.save()
+    # 测试2：创建多个同名的用户
+    user = dict(
+        username='hehe',
+        password='pwd'
+    )
+    u = User.new(user)
+    u.save()
+    u = User.new(user)
+    u.save()
+    u = User.new(user)
+    u.save()
+    u = User.new(user)
+    u.save()
+
+from models.user import User
 if __name__ == '__main__':
+    test_models_id()
+
     # 生成配置并且运行程序
     config = dict(
         host='',
