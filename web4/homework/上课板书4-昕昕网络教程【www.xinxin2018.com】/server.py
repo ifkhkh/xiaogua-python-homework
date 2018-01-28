@@ -109,7 +109,10 @@ def response_for_path(path):
         # '/messages': route_message,
     }
     r.update(route_dict)
+    log('xxxxxxxxxxxxxxxxxxxx route dict {} path {}'.format(r, path))
     response = r.get(path, error)
+    log('xxxxxxxxxxxxxxxxxxxx response {}'.format(response))
+
     return response(request)
 
 

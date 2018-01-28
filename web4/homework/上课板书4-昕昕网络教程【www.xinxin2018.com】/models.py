@@ -153,6 +153,7 @@ class User(Model):
             self.id = int(self.id)
         self.username = form.get('username', '')
         self.password = form.get('password', '')
+        self.note = form.get('note', '')
 
     def validate_login(self):
         # return self.username == 'gua' and self.password == '123'

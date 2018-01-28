@@ -124,6 +124,38 @@ def route_register(request):
     return r.encode(encoding='utf-8')
 
 
+def url_for(route_func):
+    return '/login'
+
+
+def redirect(request, route_func):
+    header = 'HTTP/1.1 301 rediect\r\nLocation:{location}{path}\r\n'.format(
+                            location=request.headers['Host'],
+                            path=url_for(route_func))
+    log('redirect header {}'.format(header))
+    return header.encode('utf-8')
+
+
+def route_profile(request):
+    username = current_user(request)
+    if username == '【游客】':
+        # 未登录
+        return redirect(request, 'route_login')
+    else:
+        # 已登录
+        log('route_profile ', username)
+        user = User.find_by(username=username)
+        log('route_profile user {}'.format(user))
+        body = template('profile.html')
+        body = body.replace('{{id}}', str(user.id))
+        body = body.replace('{{username}}', user.username)
+        body = body.replace('{{note}}', user.note)
+        log('route_profile body {}'.format(body))
+        header = 'HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n'
+        response = header + '\r\n' +body
+        return response.encode('utf-8')
+
+
 def route_message(request):
     """
     消息页面的路由函数
@@ -168,4 +200,5 @@ route_dict = {
     '/login': route_login,
     '/register': route_register,
     '/messages': route_message,
+    '/profile': route_profile,
 }
